@@ -3,6 +3,8 @@ from streamlit_drawable_canvas import st_canvas
 import numpy as np
 import time
 
+st.set_page_config(page_title="Digit Sketch Predictor App")
+
 # Sidebar for defining sketch configurations
 st.sidebar.title("Sketch Configurations")
 stroke_width = st.sidebar.slider("Stroke Width:", 1, 25, 3)
