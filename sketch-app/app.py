@@ -1,14 +1,25 @@
 import streamlit as st
 from streamlit_drawable_canvas import st_canvas
 import numpy as np
+import cv2 as cv
+import torch
+from torchvision import transforms
 import time
 
 st.set_page_config(page_title="Digit Sketch Predictor App")
 
-# Sidebar for defining sketch configurations
-st.sidebar.title("Sketch Configurations")
-stroke_width = st.sidebar.slider("Stroke Width:", 1, 25, 3)
-stroke_color = st.sidebar.color_picker("Stroke Colour:")
+# Load model
+model = torch.load("model_091021_v2.pth", map_location=torch.device("cpu"))
+model.eval()
+
+# Sidebar
+st.sidebar.title("About This Project")
+st.sidebar.write("This project was built as a showcase of an end-to-end machine learning project from training a ResNet18 based classifier using PyTorch all the way to containerizing and deploying using Docker.")
+st.sidebar.write(
+    "The current model used here was trained on 60000 images and has an accuracy of 99% on a test set.")
+st.sidebar.write(
+    "Visit the repository for this app [here!](https://github.com/tengznaim/digit-sketch-predictor)")
+st.sidebar.write("Built with ♥ by Tengku Naim")
 
 # Main App
 st.title("Digit Sketch Predictor")
@@ -18,9 +29,9 @@ canvas_col, result_col = st.columns((2, 1))
 
 with canvas_col:
     canvas = st_canvas(
-        stroke_width=stroke_width,
-        stroke_color=stroke_color,
-        background_color="#eee",
+        stroke_width=25,
+        stroke_color="#FFFFFF",
+        background_color="#000000",
         background_image=None,
         update_streamlit=True,
         height=400,
@@ -34,11 +45,23 @@ with canvas_col:
 with result_col:
     if submit:
         if len(canvas.json_data["objects"]) > 0:
-            image = np.array(canvas.image_data)
-            gray = image[:, :, 0]
-            print(gray)
-            with st.spinner("Making a prediction..."):
-                time.sleep(5)
-            st.image(gray)
+            image = np.array(canvas.image_data, dtype="uint8")
+            gray = cv.cvtColor(image, cv.COLOR_RGBA2GRAY)
+            resized = cv.resize(gray, (28, 28))
+            resized = np.expand_dims(resized, 0)
+
+            input_image = torch.from_numpy(
+                resized).unsqueeze(0).float()
+            input_image.div_(255)
+
+            with torch.no_grad():
+                predictions = model(input_image).numpy()
+                label = np.argmax(predictions, axis=1)[0]
+
+            st.markdown(
+                f"<h1 style='text-align: center;'>Predicted Digit:</h1>", unsafe_allow_html=True)
+            st.markdown(
+                f"<h1 style='text-align: center;'>{label}</h1>", unsafe_allow_html=True)
+
         else:
             st.error("Make sure you've drawn something!")
