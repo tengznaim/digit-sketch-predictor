@@ -3,8 +3,6 @@ from streamlit_drawable_canvas import st_canvas
 import numpy as np
 import cv2 as cv
 import torch
-from torchvision import transforms
-import time
 
 st.set_page_config(page_title="Digit Sketch Predictor App")
 

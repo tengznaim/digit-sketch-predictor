@@ -1,0 +1,6 @@
+streamlit==0.88.0
+streamlit_drawable_canvas==0.8.0
+numpy==1.19.5
+opencv_python==4.5.3.56
+torch==1.9.0
+torchvision==0.10.0
