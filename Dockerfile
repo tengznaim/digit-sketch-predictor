@@ -13,6 +13,6 @@ RUN pip install --no-cache-dir -r requirements.txt
 
 COPY sketch-app ./
 
-EXPOSE 80
+EXPOSE $PORT
 
-CMD streamlit run --server.port 80 app.py
+CMD streamlit run --server.port $PORT app.py
