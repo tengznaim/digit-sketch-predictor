@@ -31,6 +31,8 @@ The app can be viewed at `localhost:8501`
 
 To build a Docker image of this application and run it, do the following:
 
+> The Dockerfile is currently configured to work with a Heroku deployment and hence the $PORT environment variable. If you'd like to follow the remaining steps below, do change these to a desired port or port 8501 in order for the guide below to work
+
 1. Install Docker
 2. Build the image using the following:
    ```
@@ -48,7 +50,21 @@ To build a Docker image of this application and run it, do the following:
 
 ## Deploying to Heroku
 
-- TBC
+Under the References section below, there is an [option](https://www.youtube.com/watch?v=tTwGdUTR5h8) to deploy the image to Heroku locally using the Heroku CLI. However, I didn't want to build the image since it takes up space. Instead, I applied an alternative method of using GitHub actions to build and deploy the image through a workflow that can be triggered manually and can also theoretically be configured for a more extensive CI/CD. The GitHub actions I referenced here can be found [here](https://github.com/gonuit/heroku-docker-deploy).
+
+Steps I took to get this workflow working are as follows:
+
+1. Create the workflow yml under the folder `.github/workflows`
+2. Create a Heroku app for the project.
+3. Note down the app name, your Heroku email and get your Heroku API key from your Heroku settings.
+4. Enter these values under `Settings > Secrets` with the following names:
+   - HEROKU_API_KEY
+   - HEROKU_APP_NAME
+   - HEROKU_EMAIL
+5. Push the deployment file and either let the workflow run if configured for push on master or manually trigger it.
+   - Note that in order for committing workflows to work, you may need to generate a new Personal Access Token (PAT) with workflows checked.
+
+Lastly, in order for this specific deployment to work, port references in the Dockerfile should be changed to the $PORT environment variable because Heroku assigns a port dynamically.
 
 ## References
 
@@ -64,3 +80,8 @@ To build a Docker image of this application and run it, do the following:
    - I used this to inspect the file structure of the image because initially, the container wouldn't run properly due to an error in file copying.
 5. Deploying Docker on Heroku
    - https://www.youtube.com/watch?v=tTwGdUTR5h8
+6. GitHub Actions
+   - [GitHub actions quickstart](https://docs.github.com/en/actions/quickstart)
+   - [Creating a GitHub personal access token](https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/creating-a-personal-access-token) (ensure workflows are checked)
+   - [Adding secrets to use in workflows](https://docs.github.com/en/actions/security-guides/encrypted-secrets)
+   - [What does Checkout actually mean?](https://github.community/t/what-is-actions-checkout-v2-in-github-action/191110)
