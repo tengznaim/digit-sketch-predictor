@@ -43,13 +43,12 @@ with canvas_col:
 with result_col:
     if submit:
         if len(canvas.json_data["objects"]) > 0:
-            image = np.array(canvas.image_data, dtype="uint8")
-            gray = cv.cvtColor(image, cv.COLOR_RGBA2GRAY)
-            resized = cv.resize(gray, (28, 28))
-            resized = np.expand_dims(resized, 0)
+            image = cv.resize(canvas.image_data.astype('uint8'), (28, 28))
+            colour_converted = cv.cvtColor(image, cv.COLOR_BGR2GRAY)
+            colour_converted = np.expand_dims(colour_converted, 0)
 
             input_image = torch.from_numpy(
-                resized).unsqueeze(0).float()
+                colour_converted).unsqueeze(0).float()
             input_image.div_(255)
 
             with torch.no_grad():
